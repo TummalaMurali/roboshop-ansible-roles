@@ -1,25 +1,12 @@
-- name: Install redis repo
-  ansible.builtin.yum:
-    name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
-    state: installed
-    disable_gpg_check: true
+[Unit]
+Description = User Service
+[Service]
+User=roboshop
+Environment=MONGO=true
+Environment=REDIS_HOST=redis.tmcdevops.online
+Environment=MONGO_URL="mongodb://mongodb.tmcdevops.online:27017/users"
+ExecStart=/bin/node /app/server.js
+SyslogIdentifier=user
 
-- name: Enable redis 6.2
-  ansible.builtin.command: yum module enable redis:remi-6.2 -y
-
-- name: Install redis
-  ansible.builtin.yum:
-    name: redis
-    state: installed
-
-- name: Allow remote connections to redis
-  ansible.builtin.replace:
-    path: /etc/redis.conf
-    regexp: '127.0.0.1'
-    replace: '0.0.0.0'
-
-- name: start and enable redis
-  ansible.builtin.service:
-    name: redis
-    state: started
-    enabled: yes
+[Install]
+WantedBy=multi-user.target
